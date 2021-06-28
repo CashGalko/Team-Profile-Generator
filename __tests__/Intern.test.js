@@ -1,7 +1,7 @@
 const Intern = require("../lib/Intern");
 
 describe("Intern", ()=>{
-    const intern = new Intern("Jane",1,"jane@doe.com","UCF");
+    const intern = new Intern("cash",1,"cash@galko.com","UCF");
     it("should be an object",()=> {
         
         expect(typeof(intern)).toBe("object");

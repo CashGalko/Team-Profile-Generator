@@ -4,228 +4,196 @@ const Intern = require("./lib/Intern");
 const Manager = require("./lib/Manager");
 const fs = require("fs");
 const readline = require("readline");
-var htmlCards = '';
 
-// Manager inquirer handeler
-const managerQuestions = [
+const addEngineer = [
     {
         type: "input",
-        name: "name",
-        message: "What is the name of the current Manager?",
+        name: "employeeName",
+        message: "Name of the Employee?",
+        required: true,
 
     },
     {
         type: "input",
-        name: "id",
-        message: "Please enter the Manager's employee ID.",
-        validate: (id) => {
-            if (isNaN(id)) {
-                return "Please enter a number";
-            }
-            return true;
-        }
-
+        name: "employeeEmail",
+        message: "Enter employee's email"
     },
     {
         type: "input",
-        name: "email",
-        message: "Please enter the Manager's employee email address.",
-
+        name: "employeeGit",
+        message: "Enter a link to employee's github"
     },
     {
         type: "input",
-        name: "officeNum",
-        message: "Please enter the Manager's office phone number.",
-
+        name: "employeeID",
+        message: "Enter employee's ID"
     },
     {
         type: "list",
-        name: "addEmployee",
-        message: "Add an additional team member?",
+        name: "addAnother",
+        message: "Would you like to enter another employee?",
         choices: ["Engineer", "Intern", "No"],
+    }
+    
+];
 
-    },
-]
-
-// Engineer inquirer handeler
-const engineerQuestions = [
+const addIntern = [
     {
         type: "input",
-        name: "name",
-        message: "What is the Engineer's name?",
-
-    },
-    {
-        type: "input",
-        name: "id",
-        message: "Please enter the Engineer's employee ID.",
-        validate: (id) => {
-            if (isNaN(id)) {
-                return "Please enter a number";
-            }
-            return true;
-        }
+        name: "employeeName",
+        message: "Name of the Employee?",
+        required: true,
 
     },
     {
         type: "input",
-        name: "email",
-        message: "Please enter the Engineer's employee email address.",
-
+        name: "employeeEmail",
+        message: "Enter employee's email"
     },
     {
         type: "input",
-        name: "gitHub",
-        message: "Please enter a link to the Engineer's GitHub profile.",
-
+        name: "employeeSchool",
+        message: "What school does the intern addend?"
+    },
+    {
+        type: "input",
+        name: "employeeID",
+        message: "Enter employee's ID"
     },
     {
         type: "list",
-        name: "addEmployee",
-        message: "Add an additional team member?",
+        name: "addAnother",
+        message: "Would you like to enter another employee?",
         choices: ["Engineer", "Intern", "No"],
+    }
+];
 
-    },
-]
-
-// Intern inquirer handeler
-const internQuestions = [
+const addManager = [
     {
         type: "input",
-        name: "name",
-        message: "What is the Intern's name?",
-
+        name: "employeeName",
+        message: "Name of the Manager?",
+        required: true,
     },
     {
         type: "input",
-        name: "id",
-        message: " Please enter the Intern's employee ID.",
-        validate: (id) => {
-            if (isNaN(id)) {
-                return "Please enter a number";
-            }
-            return true;
-        }
+        name: "employeeEmail",
+        message: "Enter employee's email"
     },
     {
         type: "input",
-        name: "email",
-        message: " Please enter the Intern's employee email address.",
+        name: "phoneNumber",
+        message: "What is the manager's phone number?",
 
     },
     {
         type: "input",
-        name: "school",
-        message: "Which school the the Intern currently attend?",
-
+        name: "employeeID",
+        message: "Enter employee's ID"
     },
     {
         type: "list",
-        name: "addEmployee",
-        message: "Add an additional team member?",
+        name: "addAnother",
+        message: "Would you like to enter another employee?",
         choices: ["Engineer", "Intern", "No"],
+    }
+];
 
-    },
-]
+const startQuestions = () => {
+    inquirer.prompt(addManager).then((data) => {
+        const manager = new Manager(data);
+        addTeamMember(manager);
+        if (data.addAnother == "Intern") {
+            employIntern();
 
-// Handels the addition of a manager. There must be at least a single manager for the team.
-menu = () => {
-    inquirer.prompt(managerQuestions).then(({ name, id, email, officeNum, addEmployee }) => {
-        const manager = new Manager(name, id, email, officeNum);
-        renderCard(manager);
-        if (addEmployee === 'No') {
-            renderHtml();
-        }
-        else {
-            return addMember(addEmployee);
+        } else if (data.addAnother == "Engineer") {
+            employEngineer();
+
+        } else {
+            buildPage();
         }
     })
 }
-// This only needs to handel the intern or engineer since the manager is created in the first step.
-addMember = (role) => {
-    switch (role) {
-        case 'Engineer':
-            return inquirer.prompt(engineerQuestions).then(({ name, id, email, gitHub, addEmployee }) => {
-                var engineer = new Engineer(name, id, email, gitHub);
-                renderCard(engineer);
-                if (addEmployee === 'No') {
-                    renderHtml();
-                }
-                else {
-                    return addMember(addEmployee);
-                }
-            })
-        case 'Intern':
-            return inquirer.prompt(internQuestions).then(({ name, id, email, school, addEmployee }) => {
-                var intern = new Intern(name, id, email, school)
-                renderCard(intern);
-                if (addEmployee === 'No') {
-                    renderHtml();
-                }
-                else {
-                    return addMember(addEmployee);
-                }
-            })
 
-    }
+const employIntern = () => {
+    inquirer.prompt(addIntern).then((data) => {
+        let intern = new Intern(data);
+        addTeamMember(intern);
+        if (data.addAnother == "Intern") {
+            employIntern();
+
+        } else if (data.addAnother == "Engineer") {
+            employEngineer();
+
+        } else {
+            buildPage();
+        }
+    })
 }
 
+const employEngineer = () => {
+    inquirer.prompt(addEngineer).then((data) => {
+        let engineer = new Engineer(data);
+        addTeamMember(engineer);
+        if (data.addAnother == "Intern") {
+            employIntern();
 
-renderCard = (data) => {
-    var thirdItem;
-    var icon;
-    switch (data.getRole()) {
-        case 'Manager':
-            icon = `<i class="bi bi-briefcase text-light"></i>`;
-            thirdItem = `Office Number: ${data.officeNum}`;
-            break
-        case 'Intern':
-            icon = `<i class="bi bi-linkedin text-light"></i>`
-            thirdItem = `School: ${data.school}`;
-            break
-        case 'Engineer':
-            icon = `<i class="bi bi-puzzle text-light"></i>`
-            thirdItem = `GitHub: ${data.gitHub}`;
-            break
-    }
-    htmlCards += `<div class="col">
-    <div class="card bg-grey" style="width: 18rem;">
-        <div class="card-body bg-dark">
-            <h4 class="card-title text-light">${data.name}</h4>
-            <h4 class="card-text text-light">${icon} ${data.getRole()}</h4>
+        } else if (data.addAnother == "Engineer") {
+            employEngineer();
+
+        } else {
+            buildPage();
+        }
+    })
+}
+
+let htmlBuilder = '';
+const addTeamMember = (data) => {
+    let role;
+    let card = '';
+    if (data.getRole() == "engineer") {
+        role = "Engineer"
+        let github = data.employeeGit
+    } else if (data.getrole() == "intern") {
+        role = "Intern"
+    } else {
+        role = "Manager"
+    };
+
+    card = `<div class="col">
+    <div class="card" style="width: 25px;">
+        <div class="card-body">
+            <h4 class="card-title">${data.name}</h4>
+            <h4 class="card-text">${role}</h4>
         </div>
-        <ul class="list-group list-group-flush p-3">
+        <ul class="list-group">
             <li class="list-group-item">ID: ${data.id}</li>
             <li class="list-group-item">Email: ${data.email}</li>
-            <li class="list-group-item">${thirdItem}</li>
         </ul>
     </div>
 </div>`;
+
+htmlBuilder = htmlBuilder + card;
 }
 
-
-renderHtml = () => {
-    let ws = fs.createWriteStream('./dist/index.html')
-    var interface = readline.createInterface(
+const buildPage = () => {
+    let writeSteam = fs.createWriteStream('./dist/index.html');
+    const readStream = readline.createInterface(
         {
             input: fs.createReadStream('./src/index.html'),
 
         }
     )
 
-    interface.on('line', (line) => {
-        if (line.match(/<!--cards-->/)) {
+    readStream.on('line', (line) => {
+        if (line.match(/<!--employee-->/)) {
 
-            line = line.replace(/<!--cards-->/, htmlCards)
+            line = line.replace(/<!--employee-->/, htmlBuilder)
 
         }
-        ws.write(`${line}\n`);
-        
+        writeSteam.write(`${line}\n`);
     })
-
-
-
 }
 
-// Begins the program when you use npm start
- menu();
+// Runs on load
+startQuestions();

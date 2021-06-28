@@ -1,7 +1,7 @@
 const Engineer = require("../lib/Engineer");
 
 describe("Engineer",()=>{
-    const engineer = new Engineer("Jane",1,"jane@doe.com","janegit");
+    const engineer = new Engineer("cash",1,"cash@galko.com","cashgit");
     it("Should be able to instantiate",()=>{
        
         expect(typeof(engineer)).toBe("object");
@@ -10,8 +10,8 @@ describe("Engineer",()=>{
        
         expect(engineer.getRole()).toBe("Engineer");
     })
-    it("should return getGit() as janegit",()=>{
+    it("should return getGit() as cashgit",()=>{
        
-        expect(engineer.getGit()).toBe("janegit");
+        expect(engineer.getGit()).toBe("cashgit");
     })
 })

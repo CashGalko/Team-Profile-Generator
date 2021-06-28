@@ -1,7 +1,7 @@
 const Employee = require("../lib/Employee");
 
 describe("Employee", ()=>{
-    const employee = new Employee("Jane",1,"jane@doe.com");
+    const employee = new Employee("cash",1,"cash@galko.com");
     it("should Instantiate a new object ",()=>{
         
         expect(typeof(employee)).toEqual("object");
